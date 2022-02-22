@@ -1,9 +1,8 @@
 import React from 'react';
+import axios from 'axios';
 import { Container, Typography, Grid, TextField, Button,Box } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import MuiAlert from '@material-ui/lab/Alert';
-
-
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -31,39 +30,28 @@ const submitDetails = ({ prevStep, nextStep, handleChange, values }) => {
         prevStep();
       }
 
-    
-      localStorage.setItem('first Name', JSON.stringify(values.firstName));
-      localStorage.setItem('mobile', JSON.stringify(values.mobile)); 
-      localStorage.setItem('email', JSON.stringify(values.email));
-      localStorage.setItem('depositAmount', JSON.stringify(values.depositAmount));
-      localStorage.setItem('expectedPrice', JSON.stringify(values.expectedPrice));
+      var postObject = {
+        "firstname" : "",
+        "mobile":"",
+        "email":"",
+        "depositAmount":"",
+        "expectedPrice":""
 
-      console.log(localStorage);
+      }
 
+      postObject["firstname"]=values.firstName;
+      postObject["mobile"]=values.mobile;
+      postObject["email"]=values.email;
+      postObject["depositAmount"]=values.depositAmount;
+      postObject["expectedPrice"]=values.expectedPrice;
 
-      const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: {localStorage}
-    };
-    fetch('https://1b97b43d-8f33-4a5c-98a4-0812c0493c3c.mock.pstmn.io', requestOptions)
-        .then(async response => {
-            const isJson = response.headers.get('content-type')?.includes('application/json');
-            const data = isJson && await response.json();
+      console.log(JSON.stringify(postObject));
 
-            // check for error response
-            if (!response.ok) {
-                // get error message from body or default to response status
-                const error = (data && data.message) || response.status;
-                return Promise.reject(error);
-            }
-
-            
-        })
+        axios.post('http://localhost:3001/submit', JSON.stringify(postObject))
+        .then(response =>  {console.log(response);})
         .catch(error => {
-                console.error('There was an error!', error);
+            console.error('There was an error!', error);
         });
-    
       return (
         <Container  component="main" maxWidth="xs" >
           <div>
@@ -77,11 +65,7 @@ const submitDetails = ({ prevStep, nextStep, handleChange, values }) => {
               </Grid>
               <Grid item xs={12}>
               <Alert severity="success">Successfully Submitted!</Alert>
-
               </Grid>
-            
-            
-           
             </Grid>
 
    
